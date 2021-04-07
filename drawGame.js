@@ -7,7 +7,7 @@ const ctx = canvas.getContext('2d');
 const hanoi = new Board(10, moveCallback);
 
 // resize the canvas to fill browser window dynamically
-window.addEventListener('resize', drawCanvas.bind(drawCanvas, hanoi.getState()));
+window.addEventListener('resize', window.requestAnimationFrame(drawCanvas.bind(drawCanvas, hanoi.getState())));
 window.addEventListener('load', () => { 
   window.requestAnimationFrame(drawCanvas.bind(drawCanvas, hanoi.getState()));
   hanoi.movePile(hanoi.pinLeft, hanoi.pinRight);
