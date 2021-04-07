@@ -1,16 +1,18 @@
-const Disc = require('./Disc');
+import Disc from './Disc.js';
 
-module.exports = class Board {
+export default class Board {
     pinLeft = { name: "left", discs: [] };
     pinCenter = { name: "center", discs: [] };
     pinRight = { name: "right", discs: [] };
     _discCount = 0;
+    _moveCallback;
 
-    constructor(discCount) {
+    constructor(discCount, moveCallback) {
         if(isNaN(discCount)) {
             throw 'diskCount must be a number';
         }
         this._discCount = discCount;
+        this._moveCallback = moveCallback;
         for (let i = discCount; i > 0; i--) {
             this.pinLeft.discs.push(new Disc(i));
         }
@@ -63,7 +65,7 @@ module.exports = class Board {
             throw "Invalid move";
         } else {
             toPin.discs.push(fromPin.discs.pop());
-            console.log(this.toString());
+            this._moveCallback(this.getState());
         }
     }
 
@@ -81,6 +83,16 @@ module.exports = class Board {
             boardRow = boardRow.concat('-'.repeat(pinCenterDiscSize).padStart(this._discCount) + pinCenterPipeChar + '-'.repeat(pinCenterDiscSize).padEnd(this._discCount));
             boardRow = boardRow.concat('-'.repeat(pinRightDiscSize).padStart(this._discCount) + pinRightPipeChar + '-'.repeat(pinRightDiscSize).padEnd(this._discCount));
             result = result.concat(boardRow + '\n');
+        }
+        return result;
+    }
+
+    getState() {
+        let result = { 
+            pinLeft: this.pinLeft.discs.map(disc => disc.size),
+            pinCenter: this.pinCenter.discs.map(disc => disc.size),
+            pinRight: this.pinRight.discs.map(disc => disc.size),
+            discCount: this._discCount
         }
         return result;
     }
