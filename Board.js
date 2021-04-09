@@ -12,25 +12,30 @@ export default class Board {
         this._stateChangeCallback = stateChangeCallback;
     }
 
-    setUpDiscs(discCount) {
+    setUpDiscs(discCount, doneCallback) {
         if(isNaN(discCount)) {
             throw 'diskCount must be a number';
         }
         this._discCount = discCount;
+        if(discCount <= 0) {
+            doneCallback();
+        }
         this.pinLeft.discs.push(new Disc(discCount));
         this._stateChangeCallback(this.getState());
         setTimeout(() => {
-            this._setUpDiscs(discCount-1);
+            this._setUpDiscs(discCount-1, doneCallback);
         }, this._moveFrequency);
     }
 
-    _setUpDiscs(discCount) {
-        this.pinLeft.discs.push(new Disc(discCount));
-        this._stateChangeCallback(this.getState());
+    _setUpDiscs(discCount, doneCallback) {
         if(discCount > 0) {
+            this.pinLeft.discs.push(new Disc(discCount));
+            this._stateChangeCallback(this.getState());
             setTimeout(() => {
-                this._setUpDiscs(discCount-1);
+                this._setUpDiscs(discCount-1, doneCallback);
             }, this._moveFrequency);
+        } else {
+            doneCallback();
         }
     }
 

@@ -10,9 +10,9 @@ window.addEventListener('resize', () => {
   window.requestAnimationFrame(drawCanvas.bind(drawCanvas, hanoi.getState())); 
 });
 window.addEventListener('load', () => { 
-  hanoi.setUpDiscs(10);
-  //this needs to happen after a callback, once the board is ready
-  //hanoi.movePile(hanoi.pinLeft, hanoi.pinRight);
+  hanoi.setUpDiscs(10, () => {
+    hanoi.movePile(hanoi.pinLeft, hanoi.pinRight);
+  });
 });
 
 function stateChangeCallback(gameState) {
