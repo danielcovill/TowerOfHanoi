@@ -1,20 +1,21 @@
 import Board from './Board.js';
-let iterator = 0;
 
 const canvas = document.getElementById('gameBoard');
 const ctx = canvas.getContext('2d');
 
-const hanoi = new Board(10, moveCallback);
+const hanoi = new Board(stateChangeCallback);
 
 // resize the canvas to fill browser window dynamically
-window.addEventListener('resize', window.requestAnimationFrame(drawCanvas.bind(drawCanvas, hanoi.getState())));
+window.addEventListener('resize', () => { 
+  window.requestAnimationFrame(drawCanvas.bind(drawCanvas, hanoi.getState())); 
+});
 window.addEventListener('load', () => { 
-  window.requestAnimationFrame(drawCanvas.bind(drawCanvas, hanoi.getState()));
-  hanoi.movePile(hanoi.pinLeft, hanoi.pinRight);
+  hanoi.setUpDiscs(10);
+  //this needs to happen after a callback, once the board is ready
+  //hanoi.movePile(hanoi.pinLeft, hanoi.pinRight);
 });
 
-
-function moveCallback(gameState) {
+function stateChangeCallback(gameState) {
   window.requestAnimationFrame(drawCanvas.bind(drawCanvas, gameState));
 }
 

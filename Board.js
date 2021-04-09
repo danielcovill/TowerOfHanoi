@@ -5,16 +5,32 @@ export default class Board {
     pinCenter = { name: "center", discs: [] };
     pinRight = { name: "right", discs: [] };
     _discCount = 0;
-    _moveCallback;
+    _stateChangeCallback;
+    _moveFrequency = 200;
 
-    constructor(discCount, moveCallback) {
+    constructor(stateChangeCallback) {
+        this._stateChangeCallback = stateChangeCallback;
+    }
+
+    setUpDiscs(discCount) {
         if(isNaN(discCount)) {
             throw 'diskCount must be a number';
         }
         this._discCount = discCount;
-        this._moveCallback = moveCallback;
-        for (let i = discCount; i > 0; i--) {
-            this.pinLeft.discs.push(new Disc(i));
+        this.pinLeft.discs.push(new Disc(discCount));
+        this._stateChangeCallback(this.getState());
+        setTimeout(() => {
+            this._setUpDiscs(discCount-1);
+        }, this._moveFrequency);
+    }
+
+    _setUpDiscs(discCount) {
+        this.pinLeft.discs.push(new Disc(discCount));
+        this._stateChangeCallback(this.getState());
+        if(discCount > 0) {
+            setTimeout(() => {
+                this._setUpDiscs(discCount-1);
+            }, this._moveFrequency);
         }
     }
 
@@ -65,7 +81,7 @@ export default class Board {
             throw "Invalid move";
         } else {
             toPin.discs.push(fromPin.discs.pop());
-            this._moveCallback(this.getState());
+            this._stateChangeCallback(this.getState());
         }
     }
 
