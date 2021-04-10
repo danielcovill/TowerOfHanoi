@@ -14,6 +14,7 @@ export default class Board {
             throw 'diskCount must be a number';
         }
         this._discCount = discs;
+        this.queue = [];
     }
 
     setDiscs(doneCallback, discCount = this._discCount) {
@@ -25,6 +26,39 @@ export default class Board {
             setTimeout(() => {
                 this.setDiscs(doneCallback, discCount-1);
             }, this._moveFrequency);
+        }
+    }
+
+    async resetAndDisplay(){
+        for(let i = this._discCount; i > 0; i--){
+            this.pinLeft.discs.push(new Disc(i));
+        }
+        this.pinRight.discs = [];
+
+        const timer = ms => new Promise(res => setTimeout(res, ms))
+        while(this.queue.length > 0){
+            const step = this.queue.shift();
+            let fromPin, toPin
+            if(step.toPin.name === "left"){
+                toPin = this.pinLeft
+            } else if(step.toPin.name === "center") {
+                toPin = this.pinCenter
+            } else {
+                toPin = this.pinRight
+            }
+
+            if(step.fromPin.name === "left"){
+                fromPin = this.pinLeft
+            } else if(step.fromPin.name === "center") {
+                fromPin = this.pinCenter
+            } else {
+                fromPin = this.pinRight
+            }
+
+            toPin.discs.push(fromPin.discs.pop());
+            this._stateChangeCallback(this.getState());
+
+            await timer(this._moveFrequency)
         }
     }
 
@@ -67,15 +101,17 @@ export default class Board {
         this.moveDisc(fromPin, toPin);
         // if there's anything left on the sparePin, move the entire pile to the finalPin
         this.movePile(sparePin, toPin, depth - 1);
-
     }
 
     moveDisc(fromPin, toPin) {
         if(fromPin.discs.length === 0 || (toPin.discs.length > 0 && fromPin.discs[fromPin.discs.length - 1].size > toPin.discs[toPin.discs.length - 1].size)) {
             throw "Invalid move";
         } else {
+            this.queue.push({fromPin: {...fromPin}, toPin: {...toPin}})
             toPin.discs.push(fromPin.discs.pop());
-            this._stateChangeCallback(this.getState());
+            if(toPin.discs.length === 10){
+                this.resetAndDisplay()
+            }
         }
     }
 
@@ -99,9 +135,9 @@ export default class Board {
 
     getState() {
         let result = { 
-            pinLeft: this.pinLeft.discs.map(disc => disc.size),
-            pinCenter: this.pinCenter.discs.map(disc => disc.size),
-            pinRight: this.pinRight.discs.map(disc => disc.size),
+            pinLeft: this.pinLeft.discs.map(disc => disc?.size),
+            pinCenter: this.pinCenter.discs.map(disc => disc?.size),
+            pinRight: this.pinRight.discs.map(disc => disc?.size),
             discCount: this._discCount
         }
         return result;

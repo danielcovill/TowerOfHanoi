@@ -31,7 +31,6 @@ function drawCanvas() {
 }
 
 function drawDisks(gameState, boardBottom, leftPinX, middlePinX, rightPinX, discMaxWidth) {
-  console.log(gameState.pinLeft, gameState.pinCenter, gameState.pinRight);
   const discHeight = ((canvas.height * .6) / gameState.discCount);
   const discWidthUnit = (discMaxWidth / gameState.discCount) / 2;
   let rowHeight = boardBottom - (canvas.height * .01) - (discHeight / 2);
