@@ -3,23 +3,18 @@ import Board from './Board.js';
 const canvas = document.getElementById('gameBoard');
 const ctx = canvas.getContext('2d');
 
-const hanoi = new Board(stateChangeCallback);
+const hanoi = new Board(10, () => {
+  window.requestAnimationFrame(drawCanvas);
+});
 
 // resize the canvas to fill browser window dynamically
-window.addEventListener('resize', () => { 
-  window.requestAnimationFrame(drawCanvas.bind(drawCanvas, hanoi.getState())); 
-});
 window.addEventListener('load', () => { 
-  hanoi.setUpDiscs(10, () => {
+  hanoi.setDiscs(() => {
     hanoi.movePile(hanoi.pinLeft, hanoi.pinRight);
   });
 });
 
-function stateChangeCallback(gameState) {
-  window.requestAnimationFrame(drawCanvas.bind(drawCanvas, gameState));
-}
-
-function drawCanvas(gameState) {
+function drawCanvas() {
   canvas.width = window.innerWidth - 20;
   canvas.height = window.innerHeight - 20;
   const boardStartBottom = canvas.height * .9;
@@ -32,10 +27,11 @@ function drawCanvas(gameState) {
   const discMaxWidth = ((boardEndX - boardStartX) / 3) - (canvas.width * .1);
 
   drawGameBase(boardStartBottom, boardStartX, boardEndX, leftPinX, middlePinX, rightPinX, pinHeight);
-  drawDisks(gameState, boardStartBottom, leftPinX, middlePinX, rightPinX, discMaxWidth);
+  drawDisks(hanoi.getState(), boardStartBottom, leftPinX, middlePinX, rightPinX, discMaxWidth);
 }
 
 function drawDisks(gameState, boardBottom, leftPinX, middlePinX, rightPinX, discMaxWidth) {
+  console.log(gameState.pinLeft, gameState.pinCenter, gameState.pinRight);
   const discHeight = ((canvas.height * .6) / gameState.discCount);
   const discWidthUnit = (discMaxWidth / gameState.discCount) / 2;
   let rowHeight = boardBottom - (canvas.height * .01) - (discHeight / 2);
