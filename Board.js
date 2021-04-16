@@ -29,7 +29,7 @@ export default class Board {
     }
 
     movePileIterative(fromPin, toPin) {
-        const movesRequired = Math.pow(2, this._discCount);
+        const movesRequired = Math.pow(2, this._discCount) - 1;
         let sparePin;
         if (fromPin !== this.pinLeft && toPin !== this.pinLeft) {
             sparePin = this.pinLeft;
@@ -117,7 +117,6 @@ export default class Board {
         // if the from pin is empty, there's nothing to do
         if (fromPin.discs.length === 0) {
             throw "Invalid pin selection, source pin is empty";
-            return;
         }
 
         //figure out which pin is the spare
@@ -143,8 +142,6 @@ export default class Board {
 
     moveDisc(fromPin, toPin) {
         if (fromPin.discs.length === 0 || (toPin.discs.length > 0 && fromPin.discs[fromPin.discs.length - 1].size > toPin.discs[toPin.discs.length - 1].size)) {
-            console.log("From:", fromPin, " To:", toPin);
-            console.log(this.getState());
             throw "Invalid move";
         } else {
             toPin.discs.push(fromPin.discs.pop());

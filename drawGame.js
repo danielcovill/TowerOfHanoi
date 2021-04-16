@@ -19,7 +19,7 @@ window.addEventListener('load', () => {
 
 function drawCanvas(boardState) {
   canvas.width = window.innerWidth - 20;
-  canvas.height = window.innerHeight - 20;
+  canvas.height = window.innerHeight / 2;
   const boardStartBottom = canvas.height * .9;
   const boardStartX = canvas.width * .01;
   const boardEndX = canvas.width - (canvas.width * .01);
@@ -34,7 +34,6 @@ function drawCanvas(boardState) {
 }
 
 function drawDisks(gameState, boardBottom, leftPinX, middlePinX, rightPinX, discMaxWidth) {
-  console.log(gameState.pinLeft, gameState.pinCenter, gameState.pinRight);
   const discHeight = ((canvas.height * .6) / gameState.discCount);
   const discWidthUnit = (discMaxWidth / gameState.discCount) / 2;
   let rowHeight = boardBottom - (canvas.height * .01) - (discHeight / 2);
