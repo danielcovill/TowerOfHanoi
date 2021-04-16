@@ -3,18 +3,21 @@ import Board from './Board.js';
 const canvas = document.getElementById('gameBoard');
 const ctx = canvas.getContext('2d');
 
-const hanoi = new Board(10, () => {
-  window.requestAnimationFrame(drawCanvas);
+const hanoi = new Board(10, (state) => {
+   window.requestAnimationFrame(drawCanvas.bind(drawCanvas, state));
+   //the callback only works with the non-reqcursive movements because canvas won't render till 
+   //current execution has returned and it's turn in the event loop comes up
+   //https://stackoverflow.com/questions/41346772/how-do-i-know-when-html5-canvas-rendering-is-finished
 });
 
 // resize the canvas to fill browser window dynamically
 window.addEventListener('load', () => { 
   hanoi.setDiscs(() => {
-    hanoi.movePile(hanoi.pinLeft, hanoi.pinRight);
+    hanoi.movePileIterative(hanoi.pinLeft, hanoi.pinRight);
   });
 });
 
-function drawCanvas() {
+function drawCanvas(boardState) {
   canvas.width = window.innerWidth - 20;
   canvas.height = window.innerHeight - 20;
   const boardStartBottom = canvas.height * .9;
@@ -27,7 +30,7 @@ function drawCanvas() {
   const discMaxWidth = ((boardEndX - boardStartX) / 3) - (canvas.width * .1);
 
   drawGameBase(boardStartBottom, boardStartX, boardEndX, leftPinX, middlePinX, rightPinX, pinHeight);
-  drawDisks(hanoi.getState(), boardStartBottom, leftPinX, middlePinX, rightPinX, discMaxWidth);
+  drawDisks(boardState, boardStartBottom, leftPinX, middlePinX, rightPinX, discMaxWidth);
 }
 
 function drawDisks(gameState, boardBottom, leftPinX, middlePinX, rightPinX, discMaxWidth) {
